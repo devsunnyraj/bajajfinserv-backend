@@ -8,14 +8,12 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(bodyParser.json());
 
-// GET endpoint
 app.get("/bfhl", (req, res) => {
   res.json({
     operation_code: 1,
   });
 });
 
-// POST endpoint
 app.post("/bfhl", (req, res) => {
   try {
     const { data } = req.body;
@@ -24,9 +22,16 @@ app.post("/bfhl", (req, res) => {
       return res.status(400).json({ error: "Invalid input format" });
     }
 
-    const alphabets = data.filter((char) => /^[A-Za-z]$/.test(char));
-    const numbers = data.filter((char) => /^[0-9]+$/.test(char)).map(Number);
-    const highestAlphabet = alphabets.sort().pop() || null;
+    const alphabets = data
+      .filter((char) => /^[A-Za-z]$/.test(char))
+      .map((char) => char.toUpperCase())
+      .sort();
+
+    const numbers = data
+      .filter((char) => /^[0-9]+$/.test(char))
+      .map(Number);
+
+    const highestAlphabet = alphabets.length > 0 ? [alphabets[alphabets.length - 1]] : [];
 
     res.json({
       is_success: true,
@@ -42,7 +47,6 @@ app.post("/bfhl", (req, res) => {
   }
 });
 
-// Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
